@@ -6,13 +6,18 @@ export default function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    function registerUser(ev) {
+    async function registerUser(ev) {
         ev.preventDefault();
-        axios.post('/register', {
-            name,
-            email,
-            password
-        })
+        try {
+            await axios.post('/register', {
+                name,
+                email,
+                password
+            })
+            alert('Registrantion successful. Now you can log in');
+        }catch(e) {
+            alert('registrantion failed. Please try again later');
+        }
     }
     return(
         <div className="mt-4 grow flex items-center justify-around">
@@ -28,6 +33,7 @@ export default function RegisterPage() {
                         placeholder="password"
                         value={password} onChange={ev => setPassword(ev.target.value)}
                          />
+                        
                 <button className="primary">Login</button>
                 <div className="text-center py-2 text-gray-500">
                     {"Don't"} have an account yet? <Link className="underline text-black" to={'/login'}>Login now</Link>
