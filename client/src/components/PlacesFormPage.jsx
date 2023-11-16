@@ -8,7 +8,7 @@ import { Navigate, useParams } from "react-router-dom";
 
 export default function PlacesFormPage() {
     const {id} = useParams();
-    console.log(id);
+    // console.log(id);
     const [title,setTitle] = useState('');
     const [address,setAddress] = useState('');
     const [addedPhotos,setAddedPhotos] = useState([]);
@@ -17,6 +17,7 @@ export default function PlacesFormPage() {
     const [extraInfo,setExtraInfo] = useState('');
     const [checkIn,setCheckIn] = useState('');
     const [checkOut,setCheckOut] = useState('');
+    const [price, setPrice] = useState(0);
     const [maxGuests,setMaxGuests] = useState(1);
     const [redirect, setRedirect] = useState(false);
 
@@ -35,6 +36,7 @@ export default function PlacesFormPage() {
                 setPerks(data.perks);
                 setExtraInfo(data.extraInfo);
                 setCheckIn(data.checkIn);
+                setPrice(data.price);
                 setCheckOut(data.checkOut);
                 setMaxGuests(data.maxGuests)
             });
@@ -60,13 +62,24 @@ export default function PlacesFormPage() {
         );
       }
 
-      async function addNewPlace(ev) {
+      async function savePlace(ev) {
         ev.preventDefault();
+        const placeData = {title,address, addedPhotos, description, checkIn, checkOut, perks, extraInfo, maxGuests, price}
+        if(id) {
+          // up date
+          // eslint-disable-next-line no-unused-vars
+          const {data} = await axios.put('/places',{id, ...placeData});
+          // setRedirect(true)
+          setRedirect(true);
+        }else{
+          //create
+          // eslint-disable-next-line no-unused-vars
+          const {data} = await axios.post('/places',{placeData});
+          // setRedirect(true)
+          setRedirect(true);
+        }
         
-        // eslint-disable-next-line no-unused-vars
-        const {data} = await axios.post('/places',{title,address, addedPhotos, description, checkIn, checkOut, perks, extraInfo, maxGuests});
-        // setRedirect(true)
-        setRedirect(true);
+        
       }
 
       if(redirect) {
@@ -80,7 +93,7 @@ export default function PlacesFormPage() {
     return (
         <div className="">
             <AccountNav/>
-              <form onSubmit={addNewPlace}>
+              <form onSubmit={savePlace}>
               {preInput('Title', 'Title for your place. should be short and catchy as in advertisement')}
                 <input type="text" value={title} onChange={ev => setTitle(ev.target.value)} placeholder="title, for Ex: my lovely apt"/>
                 {preInput('Address', 'Address to this place')}
@@ -111,6 +124,10 @@ export default function PlacesFormPage() {
                         <input  type="number" value={maxGuests}
                    onChange={ev => setMaxGuests(ev.target.value)}/>
                     </div>
+                </div>
+                <div>
+                  <h3 className="nt-2 -mb-1">Price per night</h3>
+                  <input type="number" value={price} onChange={ev=> setPrice(ev.target.value)} />
                 </div>
                 <div>
                     <button className="primary my-4">Save</button>
